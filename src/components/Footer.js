@@ -17,9 +17,8 @@ export class Footer extends Component {
             <h4>Quick Links</h4>
             <ul>
               <li><a href="/">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li><a href="#privacy">Privacy Policy</a></li>
+              <li><a href="#categories">Categories</a></li>
+              <li><a href="#news">Latest News</a></li>
             </ul>
           </div>
 

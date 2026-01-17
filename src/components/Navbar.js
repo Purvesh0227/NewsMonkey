@@ -28,8 +28,7 @@ export class Navbar extends Component {
             </a>
             <div className="nav-links">
               <a href="/" className="nav-link active">Home</a>
-              <a href="#about" className="nav-link">About</a>
-              <button onClick={this.toggleContact} className="nav-link contact-btn">Contact</button>
+              <button onClick={this.toggleContact} className="nav-link contact-btn">Connect Me</button>
             </div>
           </div>
         </nav>
@@ -40,7 +39,7 @@ export class Navbar extends Component {
             <div className='contact-modal' onClick={(e) => e.stopPropagation()}>
               <button className='close-btn' onClick={this.closeContact}>✕</button>
               <div className='contact-content'>
-                <h2>📧 Contact Us</h2>
+                <h2>🤝 Connect With Me</h2>
                 <div className='contact-card'>
                   <div className='contact-item'>
                     <span className='contact-icon'>👤</span>
@@ -66,8 +65,22 @@ export class Navbar extends Component {
                   <div className='contact-item'>
                     <span className='contact-icon'>💼</span>
                     <div>
+                      <h4>LinkedIn</h4>
+                      <a href="https://www.linkedin.com/in/purvesh-mohite-616818325/" target="_blank" rel="noopener noreferrer">Visit Profile →</a>
+                    </div>
+                  </div>
+                  <div className='contact-item'>
+                    <span className='contact-icon'>🐙</span>
+                    <div>
+                      <h4>GitHub</h4>
+                      <a href="https://github.com/Purvesh0227" target="_blank" rel="noopener noreferrer">Visit Profile →</a>
+                    </div>
+                  </div>
+                  <div className='contact-item'>
+                    <span className='contact-icon'>💡</span>
+                    <div>
                       <h4>About</h4>
-                      <p>NewsMonkey - Your daily news companion. Get the latest headlines instantly!</p>
+                      <p>Building awesome web experiences with React & modern technologies!</p>
                     </div>
                   </div>
                 </div>
