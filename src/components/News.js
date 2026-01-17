@@ -26,9 +26,8 @@ export class News extends Component {
     const { page, pageSize, category, sortBy } = this.state;
     this.setState({ loading: true, error: null });
     
-    // API key from environment variable
-    const API_KEY = process.env.REACT_APP_NEWS_API_KEY || 'a324eb05787840299b2686028a94dc82';
-    const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&apiKey=${API_KEY}`;
+    // Use backend API route instead of direct API call
+    const url = `/api/news?category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}`;
     
     console.log('Fetching from:', url);
     
