@@ -12,10 +12,8 @@ export class News extends Component {
       page: 1,
       pageSize: 12,
       category: 'general',
-      subCategory: null,
       totalResults: 0,
       error: null,
-      searchQuery: '',
       sortBy: 'publishedAt'
     }
   }
@@ -25,7 +23,7 @@ export class News extends Component {
   }
 
   fetchNews = () => {
-    const { page, pageSize, category, searchQuery, sortBy } = this.state;
+    const { page, pageSize, category, sortBy } = this.state;
     this.setState({ loading: true, error: null });
     
     // API key
