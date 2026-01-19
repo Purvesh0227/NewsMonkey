@@ -55,29 +55,40 @@ export class News extends Component {
     console.log('Country:', country, 'Category:', category);
     
     fetch(url, {
+      method: 'GET',
       headers: {
-        'Accept': 'application/json'
-      }
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'omit'
     })
       .then(response => {
         console.log('Response status:', response.status);
+        console.log('Response headers:', {
+          contentType: response.headers.get('content-type'),
+          corsHeader: response.headers.get('access-control-allow-origin')
+        });
         
         if (response.status === 426) {
-          throw new Error('Upgrade Required: The server requires HTTPS. Please ensure you are using a secure connection.');
+          throw new Error('Server requires HTTPS upgrade.');
         }
         
         if (response.status === 403 || response.status === 401) {
-          throw new Error('API Key Error: Please check your NEWS_API_KEY configuration.');
+          throw new Error('API Key Error: Please verify your NEWS_API_KEY is correct.');
+        }
+        
+        if (response.status === 429) {
+          throw new Error('API rate limit exceeded. Please try again later.');
         }
         
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+          throw new Error(`API returned error: ${response.status} - ${response.statusText}`);
         }
         
         const contentType = response.headers.get('content-type');
         
         if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Invalid response type: Expected JSON but got ' + contentType);
+          throw new Error('Invalid response type from API');
         }
         
         return response.json();
@@ -106,6 +117,7 @@ export class News extends Component {
       })
       .catch(error => {
         console.error("Error fetching news:", error);
+        console.error("Error stack:", error.stack);
         this.setState({ 
           articles: [],
           loading: false,
