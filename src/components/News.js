@@ -51,10 +51,16 @@ export class News extends Component {
       url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&apiKey=${API_KEY}`;
     }
     
-    console.log('Fetching from:', url.split('&apiKey=')[0] + '&apiKey=***');
+    // Use proxy in production, direct call in development
+    const isProduction = process.env.NODE_ENV === 'production';
+    const fetchUrl = isProduction 
+      ? `/api/proxy?url=${encodeURIComponent(url)}`
+      : url;
+    
+    console.log('Fetching from:', fetchUrl.includes('/api/proxy') ? 'via proxy' : 'direct', url.split('&apiKey=')[0] + '&apiKey=***');
     console.log('Country:', country, 'Category:', category);
     
-    fetch(url, {
+    fetch(fetchUrl, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
