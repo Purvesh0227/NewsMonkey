@@ -54,7 +54,11 @@ export class News extends Component {
     console.log('Fetching from:', url.split('&apiKey=')[0] + '&apiKey=***');
     console.log('Country:', country, 'Category:', category);
     
-    fetch(url)
+    fetch(url, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
       .then(response => {
         console.log('Response status:', response.status);
         
@@ -62,8 +66,12 @@ export class News extends Component {
           throw new Error('Upgrade Required: The server requires HTTPS. Please ensure you are using a secure connection.');
         }
         
+        if (response.status === 403 || response.status === 401) {
+          throw new Error('API Key Error: Please check your NEWS_API_KEY configuration.');
+        }
+        
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+          throw new Error(`API Error: ${response.status} - ${response.statusText}`);
         }
         
         const contentType = response.headers.get('content-type');
