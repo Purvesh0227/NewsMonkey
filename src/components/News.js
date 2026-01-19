@@ -27,7 +27,7 @@ export class News extends Component {
     const { page, pageSize, category, sortBy, country } = this.state;
     this.setState({ loading: true, error: null });
     
-    const API_KEY = process.env.REACT_APP_NEWS_API_KEY || '941d1650e227436ba8f3d99df2acd643';
+    const API_KEY = process.env.REACT_APP_NEWS_API_KEY || '9caedeabcb204fa1a7917c1e067306d9';
     
     let url;
     
