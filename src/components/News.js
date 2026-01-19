@@ -14,7 +14,8 @@ export class News extends Component {
       category: 'general',
       totalResults: 0,
       error: null,
-      sortBy: 'publishedAt'
+      sortBy: 'publishedAt',
+      country: 'us'
     }
   }
 
@@ -23,24 +24,59 @@ export class News extends Component {
   }
 
   fetchNews = () => {
-    const { page, pageSize, category, sortBy } = this.state;
+    const { page, pageSize, category, sortBy, country } = this.state;
     this.setState({ loading: true, error: null });
     
-    // Use backend API route instead of direct API call
-    const url = `/api/news?category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}`;
+    const API_KEY = process.env.REACT_APP_NEWS_API_KEY || '941d1650e227436ba8f3d99df2acd643';
     
-    console.log('Fetching from:', url);
+    let url;
+    
+    // Build the API URL based on country and category
+    if (category === 'cricket') {
+      // Cricket: Search specifically for cricket news globally
+      url = `https://newsapi.org/v2/everything?q=cricket&sortBy=${sortBy}&page=${page}&pageSize=${pageSize}&apiKey=${API_KEY}`;
+    } else if (country === 'us') {
+      // US: Use top-headlines with country and category filters
+      url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&apiKey=${API_KEY}`;
+    } else if (country === 'in') {
+      // India: Search for news with India filter and category
+      const categoryQuery = category === 'general' ? 'India' : `India ${category}`;
+      url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(categoryQuery)}&sortBy=${sortBy}&page=${page}&pageSize=${pageSize}&language=en&apiKey=${API_KEY}`;
+    } else if (country === 'world') {
+      // World: Search for category news globally without country restriction
+      const categoryQuery = category === 'general' ? 'news' : category;
+      url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(categoryQuery)}&sortBy=${sortBy}&page=${page}&pageSize=${pageSize}&apiKey=${API_KEY}`;
+    } else {
+      // Default fallback
+      url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&apiKey=${API_KEY}`;
+    }
+    
+    console.log('Fetching from:', url.split('&apiKey=')[0] + '&apiKey=***');
+    console.log('Country:', country, 'Category:', category);
     
     fetch(url)
       .then(response => {
         console.log('Response status:', response.status);
+        
         if (!response.ok) {
           throw new Error(`API Error: ${response.status}`);
         }
+        
+        const contentType = response.headers.get('content-type');
+        
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Invalid response type: Expected JSON but got ' + contentType);
+        }
+        
         return response.json();
       })
       .then(data => {
-        console.log('Fetched articles:', data.articles);
+        console.log('Fetched articles:', data.articles?.length || 0);
+        
+        if (data.status === 'error') {
+          throw new Error(data.message || 'API Error');
+        }
+        
         if (data.articles && Array.isArray(data.articles) && data.articles.length > 0) {
           this.setState({
             articles: data.articles,
@@ -52,7 +88,7 @@ export class News extends Component {
           this.setState({ 
             articles: [],
             loading: false,
-            error: 'No articles found'
+            error: 'No articles found for this selection'
           });
         }
       })
@@ -68,6 +104,10 @@ export class News extends Component {
 
   handleCategoryChange = (category) => {
     this.setState({ category, page: 1, subCategory: null }, this.fetchNews);
+  }
+
+  handleCountryChange = (country) => {
+    this.setState({ country, page: 1 }, this.fetchNews);
   }
 
   handleSortChange = (sortBy) => {
@@ -88,7 +128,7 @@ export class News extends Component {
   }
 
   render() {
-    const { articles, loading, page, pageSize, totalResults, category, error, sortBy } = this.state;
+    const { articles, loading, page, pageSize, totalResults, category, error, sortBy, country } = this.state;
     const categories = ['general', 'business', 'technology', 'health', 'sports', 'entertainment'];
     
     return (
@@ -97,6 +137,30 @@ export class News extends Component {
         <div className='header-section'>
           <h1 className='main-title'>📰 Latest News</h1>
           <p className='subtitle'>Stay updated with the latest headlines</p>
+        </div>
+
+        {/* Country Filter */}
+        <div className='country-section'>
+          <div className='country-buttons'>
+            <button 
+              className={`country-btn ${country === 'us' ? 'active' : ''}`}
+              onClick={() => this.handleCountryChange('us')}
+            >
+              🇺🇸 United States
+            </button>
+            <button 
+              className={`country-btn ${country === 'in' ? 'active' : ''}`}
+              onClick={() => this.handleCountryChange('in')}
+            >
+              🇮🇳 India
+            </button>
+            <button 
+              className={`country-btn ${country === 'world' ? 'active' : ''}`}
+              onClick={() => this.handleCountryChange('world')}
+            >
+              🌍 World
+            </button>
+          </div>
         </div>
 
         {/* Category Filter */}
