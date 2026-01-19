@@ -58,6 +58,10 @@ export class News extends Component {
       .then(response => {
         console.log('Response status:', response.status);
         
+        if (response.status === 426) {
+          throw new Error('Upgrade Required: The server requires HTTPS. Please ensure you are using a secure connection.');
+        }
+        
         if (!response.ok) {
           throw new Error(`API Error: ${response.status}`);
         }
