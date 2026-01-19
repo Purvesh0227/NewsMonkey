@@ -52,12 +52,13 @@ export class News extends Component {
     }
     
     // Use proxy in production, direct call in development
-    const isProduction = process.env.NODE_ENV === 'production';
-    const fetchUrl = isProduction 
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const fetchUrl = !isLocalhost 
       ? `/api/proxy?url=${encodeURIComponent(url)}`
       : url;
     
     console.log('Fetching from:', fetchUrl.includes('/api/proxy') ? 'via proxy' : 'direct', url.split('&apiKey=')[0] + '&apiKey=***');
+    console.log('Environment:', isLocalhost ? 'development' : 'production');
     console.log('Country:', country, 'Category:', category);
     
     fetch(fetchUrl, {
